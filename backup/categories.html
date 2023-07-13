@@ -1,0 +1,246 @@
+
+<!-- Promotion -->
+<div class="span9" style='margin-left: 30px;' ng-cloak>
+	<!-- style='width:825px;' -->
+	<div class="panel shadowE" >	
+	<div class="panel-heading" style="margin: -15px -15px 5px !important;height:20px;background-color:white;">
+		 <h3 class="panel-title" style="line-height: 20px;"> 
+			<i class="icon-tag"></i>&nbsp;{{langue.l_voir_produits4}}&nbsp;{{langue.l_pour}}&nbsp;{{postalCode | codepostal}} ({{distance}} km) - <b>{{produit_franchise}}</b> {{langue.l_product | lowercase}}	
+		 <!-- span ng-show='promotion_loading'>&nbsp;<i class="icon-refresh icon-spin"></i></span>  -->
+			<span style='float:right;margin-top:-5px;'><button class="btn btn-primary" ng-click="showAll()">{{langue.l_all_products}}</button></span>
+		 </h3>					
+	</div>
+		<!-- No product in promotion -->
+		<div ng-show="produit_franchise==0" ng-controler='mainCtrl' ng-cloak>
+			
+			<div class="alert alert-info">			
+			<img class='pull-left' src='images/google_map_bw.png'></img>
+			<center>			
+			<h4>{{langue.l_attention}}!</h4>
+			<br>	
+			{{langue.l_sorry_km1}} <b>{{distance}} km</b> {{langue.l_for}} <b>{{postalCode | codepostal}}</b>.
+			<br>
+			<span ng-show='minimum_franchise_distance<=20'>{{langue.l_sorry_km2}} <b>{{minimum_franchise_distance}} km</b></span>.			
+			<center>
+			</div>			
+		
+		</div>
+
+	
+	<div class="row no-space" style='margin:0px;'  ng-cloak>
+		<table border=0 class="table-condensed span9">  
+			<tbody>
+				<tr  ng-repeat="cat in  promos_categories  | orderBy:getOrderCategorie()" ng-controler='mainCtrl'>
+					<td>
+						<!-- ligne de spéciaux pour une franchise -->	
+						<a href="" style='text-align:center;font-size:110%;padding-top:10px;cursor: hand;cursor:pointer;font-weight:bold;' ng-click='setFilterCategorie(cat);'>{{getNameCategorie(cat)}}</a>	
+						<table  class="table-condensed" style="margin-left:-20px;border-bottom:0px dotted grey;">							
+							<tr ng-class="{'promotion2':promo.nomFranchise=='Pasquier'}">
+								
+								<td>
+									
+									 <ul class="thumbnails" style="margin:0 0 0 0;min-height:147px;">
+                                            <!-- style="height:200px;width:200px;150px;border:1px" -->
+                                            <li class="span2" style="width:135px;margin-bottom:0px;" ng-repeat="produitdef in cat.produit | limitTo:getPromotionNumber() " >
+                                                <div style='display:none'>	{{produit = getProduit(produitdef)}}</div>
+                                                <div style='text-align:center;padding-bottom:2px;'><img src='images/{{produit.el}}'  style="max-width: 90px !important;"></img></b></div>
+												<div style='display:none'>	</div>
+												<div id="all_desc-{{produit.i}}"  href="#" class="thumbnail all_desc" style='background:white;' data-overlayid="springinfo">
+                                                    <div id="thumbnail_desc-{{produit.i}}" class="thumbnail_desc show">
+                                                        <center>
+                                                        	<div style='display : table-cell;width:80px;height:80px;vertical-align:middle;'>
+                                                        		<img name=image id="imagethumb-{{produit.i}}" src="images/correspondence.php?id_produit={{produit.i}}&lg={{langage}}&{{version}}" style="max-width: 80px !important;max-height:80px !important; height:auto; width: auto;">
+                                                        	</div>
+                                                        </center>
+                                                        <!-- content -->
+                                                        <center><span id='deals' ng-show="produit.pv" style='left:30px;top:-5px;' tooltip='{{langue.l_regulier}} {{produit.r | currencylg}}'>-{{produit.b}}%</span></center>
+                                                        <span ng-show="!produit.pv" style='left:30px;top:-5px;'><center><div style='width:80px;height:25px'></div></center></span>
+                                                    
+                                                    <div id="complete_desc-{{produit.i}}" class='complete_desc' style="height:44px;overflow:hidden" ">
+                                                        <p>{{produit.x}} <span ng-show="produit.z!=''">/</span> {{produit.z}}<br>
+                                                        <span ng-show="produit.w!=''"><b>{{produit.w|uppercase}}</b></span><br>
+                                                        <div class=floatBottom" ng-class="{produit_dispo:produit.nf}" style="color:black;">{{langue.l_until}}: <b>{{produit.d | datelg:'dd MMM yyyy'}}</b>
+                                                    </div>
+                                                    </div>
+												</div>
+                                                <b>{{produit.s | currencylg}}</b>
+                                                <div style="text-align:right"><button ng-show='!inCurrentPanier(produitdef)' class="btn  btn-primary btn-mini" ng-click="addProduct(produit)" tooltip="{{langue.l_ajout_liste}}" tooltip-placement="right" tooltip-popup-delay='500'>{{langue.l_ajouter}} <i class="icon-plus-sign"></i> </button></div>
+                                                <div style="height:23px;text-align:right" ng-show='inCurrentPanier(produit)'>
+                                                    <button style='background: transparent;border: none !important; vertical-align:top;' tooltip="{{langue.l_enlever_liste}}" tooltip-placement="right" tooltip-popup-delay='500' ng-click="removeProduct(produit,1);"><i class="icon-minus-sign-alt"></i></button>
+                                                    <span style='font-size:120%;font-weight:bold;'>{{totalCurrentPanier(produit,id_panier)}}</span>
+                                                    <button style='background: transparent;border: none !important; vertical-align:top;' tooltip="{{langue.l_ajout_liste}}" tooltip-placement="right" tooltip-popup-delay='500' ng-click="addProduct(produit);"><i class="icon-plus-sign-alt icon-large"></i></button>
+                                                </div>
+                                                </div>
+        
+        									</li>
+        								</ul>							
+									<!-- <p  style="text-align:center;"> {{promo.adresseFranchise}} (~{{promo.distanceFranchise}} km)</p> -->
+									<!-- Until -->			
+								
+								</td>
+								<!-- button see franchise -->
+								<td style='vertical-align:top; padding-top:6px'>
+								<br>
+								<button class='btn' style='background: transparent;height: 147px;' ng-click='setFilterCategorie(cat)' tooltip='{{langue.l_view_product_categorie}}'><i class="icon-chevron-right icon-large"></i> </button>
+								</td>
+							</tr>
+						</table>
+		
+					</td>
+				</tr>
+			</tbody>
+		</table> 
+	  </div>   
+	</div>	
+</div>
+<!-- Panier -->
+<div class='span3 visible-desktop panier' ng-controller='ProduitCtrl' style="margin-left:5px;" ng-cloak>	
+	<div class="panel shadowE" ng-controller='PanierCtrl'>	
+	<div class="panel-heading" style="margin: -15px -15px 0px !important; vertical-align:middle;background-color: rgb(255, 255, 255);height: 20px;">		
+		 <a href="" class='panier_title' ng-click='go("/panier")'><i class="icon-check"></i>&nbsp;{{langue.l_grocerylist}}</a>
+		
+		<button ng-click='print_panier()' style='display:inline;:hover:text-color:white;font-size:90%;margin-right: 10px;' class="close" tooltip-placement="left" tooltip-popup-delay='500' tooltip-html-unsafe="{{langue.l_print}}"><i class='icon-print icon-white'></i></button>
+		<button id='resize_btn' ng-click='changeHeight()' style='display:inline;:hover:text-color:white;font-size:90%;margin-right: 10px;' class="close" tooltip-placement="left" tooltip-popup-delay='500' tooltip-html-unsafe="{{langue.l_click_resize_panier}}"><i class="icon-resize-full"></i></button>							
+		
+		
+	</div>	
+	<div id='panier_list' class='panier_list' style='height:{{getHeight()}};-ms-overflow-y : scroll;margin-left:-15px;background-color: rgb(255, 248, 220);overflow:scroll;overflow-x:hidden;overflow-y: scroll;padding:10px;'>
+			<table width='100%' class="table">  	  			  
+			  
+			  <tbody>                   
+				  <!-- <tr ng-repeat="produit in getItems(id_panier)"> -->
+				  <tr ng-show='totalquantity()==0'>
+				  <td style='text-align:center'>
+					<span ng-bind-html-unsafe="langue.l_liste_vide"></span>
+				  </td>
+				  </tr>
+				  <tr ng-repeat="produit in panier_items | limitTo: itemsLimit()" style="cursor: pointer;">
+					<td style="vertical-align:middle;padding: 0px;" width='2%'>
+						<div style='font-weight:bold;display:inline;color:grey;font-size:120%;'>
+						<button style=' background: transparent;border: none !important;' ng-click="removeProduct2(produit,1)"><i class="icon-minus-sign-alt"></i><br></button>
+						<button style=' background: transparent;border: none !important;' ng-click="addProduct2(produit)"><i class="icon-plus-sign-alt"></i></button>
+						</div>
+					</td>
+					<td style="vertical-align:middle;line-height:normal;padding: 0px; !important" width='2%'>
+						<div ng-show='(totalThisItem=totalCurrentPanier(produit,id_panier))>0' style='font-weight:bold;color:black;display:inline;font-size:120%;'>						
+						{{totalThisItem}}
+						</div>						
+						 <div ng-show="totalThisItem==0" style='font-weight:bold;color:{{infocolor(totalThisItem)}};display:inline;font-size:120%;'>
+						 <button style=' background: transparent;border: none !important; padding:none;' tooltip='{{langue.l_remove}}' ng-click="deleteProductPanier(produit)"><i class="icon-remove" style='color:red;'></i></button>
+						</div>
+					</td>
+					<td>
+					<!-- <button style=' background: transparent;border: none !important;'> -->
+					<div style='display:inline;color:{{infocolor(totalThisItem)}};font-size:70%;text-align:justify;'>
+						<div style='text-align:left;line-height:normal !important;' ng-class="{produit_dispo2:produit.nf}">
+						{{produit.w|uppercase}}<br ng-show="produit.w!=''">{{produit.x}} {{produit.z}} {{produit.q}}	
+						</div>
+			 <!-- <a class="btn btn-small btn-info" href="#/produit/{{produit.i}}"> -->
+						
+						<div class='tooltip_produit' showonhover style='font-size:14px;'>
+							<img src="images/correspondence.php?id_produit={{produit.i}}&lg={{langage}}&{{version}}" class="img-polaroid floatLeft">							
+							{{produit.en}}<br>
+							<div style='font-weight:bold;color:red;display:inline;font-size:150%;'>{{produit.s| currencylg}}</div><br> <span style="color:black;" >({{langue.l_regulier | lowercase}} {{produit.r|currencylg}}) </span>	
+							<div class=floatBottom" ng-class="{produit_dispo:produit.nf}" style="color:black;">{{langue.l_until}}: <b ng-show="produit.d>0">{{produit.d | datelg:'dd MMM yyyy'}}</b><b ng-show="produit.d==0">-</b></div>
+							<div ng-show='produit.nf' style='color:red'>&nbsp;{{langue.l_no_dispo}}</div>
+						</div>
+										
+						<!-- <div style='font-weight:bold;color:red;display:inline;font-size:150%;'>{{produit.s| currencylg}}</div>			 -->
+						<!-- <div class=floatBottom" ng-class="{produit_dispo:produit.nf}"> <br>{{langue.l_until}}: <b>{{produit.d | datelg:'dd MMM yyyy'}}</b></div> -->
+						<!-- <div ng-show='produit.nf' style='color:red'>&nbsp;{{langue.l_no_dispo}}</div> -->
+						
+				
+					</button>
+					</td>				
+									
+					<td>
+					<button style='display:inline;:hover:text-color:red;' class="close" ng-click='removeProduct(produit)' tooltip-placement="bottom" tooltip-popup-delay='500' tooltip-html-unsafe="{{langue.l_click_remove}}">&times;</button>
+					<div class='panier_prix'style='font-weight:bold;display:inline;color:{{infocolor(totalThisItem,"black")}};'>
+						{{produit.s * totalCurrentPanier(produit,id_panier) | currencylg}} 
+					</div>
+						 <br><div class='panier_prix_saving' style='font-weight:bold;color:{{infocolor(totalThisItem,"red")}}; line-height:normal; !important'>{{langue.l_econo}} {{(produit.r - produit.s) * totalCurrentPanier(produit,id_panier) | currencylg}}</div>
+					</td>
+					
+				   </tr>
+					<tr ng-show="hasMoreItemsToShow()"><td colspan=4 style='text-align:center'><button class="btn" style="background:white;width:200px;" ng-click="showMoreItems()"><i class="icon-chevron-down icon-large"></i> ({{totalMore()}} {{langue.l_produit_suppl}})</button></td></tr> 
+				</tbody>
+				</table>				
+			</div> <!-- end div panier scroll -->			
+		
+			<div ng-show='totalquantity()>0' style='text-align:center'>
+				<div style='text-align:right;font-size:100%;margin-top:5px;font-weight:bold;border-top: 1px solid;border-bottom: 1px solid;padding-top: 1px;padding-bottom: 1px;margin-bottom:5px;'>{{langue.l_montant_total}}&nbsp;<s>{{totalSansSpecial()|currencylg}}</s> <span style='font-size:120%'>{{total() |currencylg}}</span></div>	
+				
+				<span id='deals3' class='panier_deal3'>
+					<div style='font-size:70%;display:inline;'>{{langue.l_yousave}}</div>
+					<b style='font-size:100%'>{{savingCurrentPanier(id_panier)| currencylg}} *</b>
+				</span>				
+			</div>
+	
+	</div>
+	<div class="panel shadowE" ng-controller='PanierCtrl'>		
+		<div style='left:50%;top:50%;' >
+		<button ng-show='totalquantity()!=0' class='btn panier_button_gomap'   ng-click='go("/map");'>
+			<span style="text-align:center;font-size:110%;padding-top:10px;color: rgb(0, 136, 204);">{{langue.l_click_tour}}</span>
+			<img src='images/google-map.png'></img>
+		</button>		
+		<button ng-show='totalquantity()==0' class='btn panier_button_gomap'  ng-click="showNearbyStores()">
+			<span style="text-align:center;font-size:110%;padding-top:10px;color: rgb(0, 136, 204);">{{langue.l_show_stores}}</span>																		
+			 <img src='images/google-map.png'></img>			
+		</button>
+		</div>
+	</div>
+ 
+	<!------------------------------------------------------------------------------------>
+    <!-------------  Lien vers le dialog pour les 8 conseils pour économiser  ------------
+    <!------------------------------------------------------------------------------------> 
+    <div class="panel shadowE" ng-controller='PanierCtrl'>    
+        <div style='left:50%;top:50%;' >
+        <button class='btn panier_button_gomap' ng-click="openModal('modal_tips_for_save')">
+            <span style="text-align:center;font-size:110%;padding-top:10px;color: rgb(0, 136, 204);">{{langue.l_tips_for_save}}</span>
+        </button>
+        </div>
+    </div>
+	
+	<!------------------------------------------------------------------------------------>
+	<!-----------------------------  Lien vers l'application IOS  ------------------------>
+	<!------------------------------------------------------------------------------------>	
+	<div class="panel shadowE">		
+		<div style='left:50%;top:50%;' >
+			<a  ng-show='lg=="fr"' href="http://localhost/app/app_fr.html" >
+				<img src="images/app_store_badge_fr.svg" style="width:280px">
+			</a>
+			<a ng-show='lg=="en"' href="http://localhost/app/app_en.html" >
+				<img src="images/apple_badge.svg" style="width:280px"></img>
+			</a>
+		</div>
+	</div>
+	
+	<center><div id='moneymaker_2'></div></center>
+	<div id='moneymaker_3'></div>
+	</div> <!-- end span3 panier-->	
+	
+	<script>
+    if (show_moneymaker == "yes" ||local_moneymaker_set) {				
+        if (local_moneymaker_set) {
+			displayMoneymaker(2);
+		} else 
+		if (!google_moneymaker_set) {
+            //try {
+              //  google_ad_client = "ca-pub-8792891939586872";
+                /* ad_right_4 */
+                //google_ad_slot = "4748306186";
+                //google_ad_width = 300;
+                //google_ad_height = 600;
+                //google_ad_client = "ca-pub-8792891939586872";
+                /* ad_right2 */
+                //google_ad_slot = "3794243780";
+                //google_ad_width = 336;
+                //google_ad_height = 280;
+                //postscribe('#ads2','<script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"><\/script>');
+            //} catch(e) {}
+            //google_pub_set=true;
+            //pub_google=$('#ads2').html();
+        }
+        
+    }
+</script>

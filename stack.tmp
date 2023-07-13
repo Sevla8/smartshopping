@@ -1,0 +1,30 @@
+One js script has to display a map. 
+This script need some data located in a file to be able to display some information on this map. 
+This data is calculated by a php script and wrote into the file. 
+But the calculation time is rather long.
+How can I make the js script waiting for the php srcipt process ending before trying to display the map ?
+
+The php script is called by:
+
+    system("php create_file.php $fichier_json >/dev/null 2>&1 &");
+
+The map display is called by:
+
+    data.displayMiniMap = function(User, load) {
+		data.http_d({ 	
+			method: 'POST',
+			crossDomain: true,
+			data: {},
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			url: '/getFranchiseDistance.php?dist='+this.distance+'&adr='+this.codePostal,
+			crossDomain: true
+		}).success(function(d) {
+			var end =  new Date();  // log end timestamp
+			data.minimap_franchise=d;
+			var diff = end - start;
+			console.log('COUCOUCOUCOUCOUCOUCOU')
+							
+			displayMap();
+		});
+	}
+
